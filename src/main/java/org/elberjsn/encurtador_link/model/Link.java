@@ -34,7 +34,7 @@ public class Link {
 
     @ManyToOne
     @JoinColumn(name = "user_link_id", nullable = false)
-    private UserLink userLink;
+    private User userLink;
 
     private Boolean status;
 
