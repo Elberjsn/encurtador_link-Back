@@ -8,6 +8,12 @@ public class UserMapper {
         if (user == null) {
             return null;
         }
-        return new UserDTO(user.getId(), user.getEmail(), user.getPassword(), user.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getPassword(), user.getPassword(),null);
+    }
+    public static UserDTO toDTO(User user,String token) {
+        if (user == null) {
+            return null;
+        }
+        return new UserDTO(user.getId(), user.getEmail(), user.getPassword(), user.getPassword(),token);
     }
 }

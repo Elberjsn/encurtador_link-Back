@@ -20,8 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
-    @Autowired
-    private JWTConfig config;
+   
 
     @Autowired
     private UserRepository userRepository;
@@ -34,7 +33,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (checkEndpoint(request)) {
             String token = recoveryToken(request);
             if (token != null) {
-                String subject = config.getSubjectFromToken(token);
+                String subject = JWTConfig.getSubjectFromToken(token);
                 User user = userRepository.findByEmail(subject).get();
                 UserDetailsImplments userDetails = new UserDetailsImplments(user);
                 var authenticator = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),null, userDetails.getAuthorities());

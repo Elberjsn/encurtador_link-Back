@@ -42,6 +42,7 @@ public class User {
         this.email = email;
         this.password = pwd;
     }
+    public User(){}
 
     public static User fromDTO(UserDTO userDTO) {
         return new User(

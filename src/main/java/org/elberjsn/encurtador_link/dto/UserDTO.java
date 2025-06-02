@@ -9,5 +9,6 @@ public record UserDTO(
         @Email String email,
 
         String pwd,
-        String name) {
+        String name,
+        String token) {
 }

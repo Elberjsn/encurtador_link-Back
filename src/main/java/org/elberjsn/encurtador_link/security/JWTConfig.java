@@ -18,7 +18,7 @@ public class JWTConfig {
 
     private static final String ISSUER = "pizzurg-api";
 
-    public String generateToken(UserDetailsImplments user) {
+    public static String generateToken(UserDetailsImplments user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             return JWT.create()
@@ -33,7 +33,7 @@ public class JWTConfig {
         }
     }
 
-    public String getSubjectFromToken(String token){
+    public static String getSubjectFromToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             return JWT.require(algorithm)
@@ -46,11 +46,11 @@ public class JWTConfig {
         }
     }
 
-    private Instant creationDate() {
+    private static Instant creationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();
     }
 
-    private Instant expirationDate() {
+    private static Instant expirationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusHours(5).toInstant();
     }
 

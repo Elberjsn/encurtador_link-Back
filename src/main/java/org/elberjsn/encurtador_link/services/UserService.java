@@ -11,26 +11,27 @@ public class UserService {
     @Autowired
     UserRepository repository;
 
-    public User save(User user){
+    public User save(User user) {
         return repository.save(user);
     }
-    public User loginUser(String email,String pwd){
-        return repository.findByEmailAndPassword(email, pwd).orElse(null);
-    }
-    public User findById(Long id){
+
+    public User findById(Long id) {
         return repository.findById(id).orElse(null);
     }
-    public User alterSenha(Long id,String pwd){
+
+    public User alterSenha(Long id, String pwd) {
         var user = findById(id);
         user.setPassword(pwd);
         return save(user);
     }
-    public User alterEmail(Long id,String email){
+
+    public User alterEmail(Long id, String email) {
         var user = findById(id);
         user.setEmail(email);
         return save(user);
     }
-    public User alter(User newUser){
+
+    public User alter(User newUser) {
         var user = findById(newUser.getId());
         user.setEmail(newUser.getEmail());
         user.setName(newUser.getName());
@@ -38,7 +39,8 @@ public class UserService {
 
         return save(user);
     }
-    public void deleteUser(User user){
+
+    public void deleteUser(User user) {
         repository.delete(user);
     }
 
