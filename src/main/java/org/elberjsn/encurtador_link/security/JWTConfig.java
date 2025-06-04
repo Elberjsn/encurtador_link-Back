@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.elberjsn.encurtador_link.security.userDatails.UserDetailsImplments;
+import org.elberjsn.encurtador_link.model.User;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -18,7 +18,7 @@ public class JWTConfig {
 
     private static final String ISSUER = "pizzurg-api";
 
-    public static String generateToken(UserDetailsImplments user) {
+    public static String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             return JWT.create()
@@ -45,6 +45,8 @@ public class JWTConfig {
             throw new JWTVerificationException("Token Expirado");
         }
     }
+
+   
 
     private static Instant creationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();

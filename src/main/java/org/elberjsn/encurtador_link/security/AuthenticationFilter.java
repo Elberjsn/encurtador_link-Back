@@ -1,15 +1,15 @@
 package org.elberjsn.encurtador_link.security;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import org.elberjsn.encurtador_link.model.User;
-import org.elberjsn.encurtador_link.repository.UserRepository;
-import org.elberjsn.encurtador_link.security.userDatails.UserDetailsImplments;
+import org.elberjsn.encurtador_link.security.userDatails.UserDetailsImplementsServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,45 +19,44 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@EnableWebSecurity
 public class AuthenticationFilter extends OncePerRequestFilter {
-   
 
     @Autowired
-    private UserRepository userRepository;
+    JWTConfig jwtUtil;
+
+    @Autowired
+    UserDetailsImplementsServices service;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, 
-                                    @NonNull HttpServletResponse response, 
-                                    @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain chain)
             throws ServletException, IOException {
-        if (checkEndpoint(request)) {
-            String token = recoveryToken(request);
-            if (token != null) {
-                String subject = JWTConfig.getSubjectFromToken(token);
-                User user = userRepository.findByEmail(subject).get();
-                UserDetailsImplments userDetails = new UserDetailsImplments(user);
-                var authenticator = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticator);
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        String jwt = authHeader.substring(7);
+        String username = JWTConfig.getSubjectFromToken(jwt);
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = service.loadUserByUsername(username);
+
+            if (username != null) {
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+                        null, userDetails.getAuthorities());
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
-        }else{
-            throw new RuntimeException("O token está ausente.");
         }
-        filterChain.doFilter(request, response);
 
-    }
-
-    private String recoveryToken(HttpServletRequest request) {
-        String auth = request.getHeader("Authorization");
-        if (auth != null) {
-            return auth.replace("Bearer ", "");
-        }
-        return null;
-    }
-
-    private boolean checkEndpoint(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        return !Arrays.asList(SecurityConfig.ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).contains(uri);
+        chain.doFilter(request, response);
     }
 
 }

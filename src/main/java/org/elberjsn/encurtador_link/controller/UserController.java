@@ -7,15 +7,13 @@ import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -28,9 +26,12 @@ public class UserController {
     @Autowired
     UserDetailsImplementsServices securityServices;
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<String> loginPost(@RequestBody UserDTO user) {
-        var login = securityServices.processLoginToken(user.email(), user.pwd());
+        System.out.println(user.toString());
+        var login = securityServices.processLoginToken(user.email(), user.password());
+
+
         if (login.id() == null) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Usuario ou Senha Não Aceito");
         }
@@ -40,20 +41,26 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).headers(headers).build();
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity<String> registerPost(@RequestBody User user) {
-        User us = service.save(user);
+                User us = service.save(user);
         if (us.getId() == null) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao Criar novo Usuario ");
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/#/{id}")
+    @GetMapping("user/simple/{id}")
+    public ResponseEntity<String> findSimpleId(@PathVariable("id") Long id) {
+        User user = service.findById(id);
+        user.setPassword("-");
+        return ResponseEntity.status(HttpStatus.OK).body(user.toString());
+    }
+    @GetMapping("user/all/{id}")
     public ResponseEntity<String> findAllId(@PathVariable("id") Long id) {
         User user = service.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user.toString());
-    }
+    }    
     
     
 

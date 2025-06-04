@@ -1,5 +1,7 @@
 package org.elberjsn.encurtador_link.services;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.elberjsn.encurtador_link.model.User;
 import org.elberjsn.encurtador_link.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,18 @@ public class UserService {
     UserRepository repository;
 
     public User save(User user) {
-        return repository.save(user);
+        try{
+            if (findByEmailUser(user.getEmail()) != null) {
+                throw new SQLIntegrityConstraintViolationException("Email já Cadastrado");
+            }else{
+                return repository.save(user);
+            }
+        }catch(Exception e){
+            throw new NullPointerException("Erro ao Cadastrar");
+        }
+    }  
+    public User findByEmailUser(String email) {
+        return repository.findByEmail(email).orElse(null);
     }
 
     public User findById(Long id) {
