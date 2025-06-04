@@ -1,6 +1,6 @@
 package org.elberjsn.encurtador_link.model;
 
-import java.io.Serializable;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Table(name = "table_users")
 public class User implements UserDetails {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

@@ -1,7 +1,11 @@
 package org.elberjsn.encurtador_link.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+
+import org.elberjsn.encurtador_link.dto.LinkDTO;
+import org.elberjsn.encurtador_link.dto.UserDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,13 +15,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "table_links")
 public class Link implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -43,4 +52,12 @@ public class Link implements Serializable {
     private Boolean status;
 
     private int counterAccess;
+
+    public static Link fromDTO(LinkDTO linkDTO) {
+        return new Link(
+            linkDTO.url(),
+            linkDTO.urlShort(),
+            linkDTO.expira()
+        );
+    }
 } 

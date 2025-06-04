@@ -1,8 +1,9 @@
 package org.elberjsn.encurtador_link.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import org.elberjsn.encurtador_link.security.userDatails.UserDetailsImplementsServices;
+import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +27,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     JWTConfig jwtUtil;
 
     @Autowired
-    UserDetailsImplementsServices service;
+    UserService service;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -34,18 +35,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (filter(request.getRequestURI()) || authHeader == null || !authHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
-        String jwt = authHeader.substring(7);
-        String username = JWTConfig.getSubjectFromToken(jwt);
+        String subjectToken = JWTConfig.getSubjectFromToken(authHeader.substring(7));
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = service.loadUserByUsername(username);
+        if (subjectToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = service.loadUserByUsername(subjectToken);
 
-            if (username != null) {
+            
+            if (subjectToken != null) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());
@@ -57,6 +58,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    private boolean filter(String uri) {
+        String[] accessNotToken = new String[] { "/", "/register", "/login" };
+
+        for (String access : accessNotToken) {
+            if (access.equals(uri)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
