@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import org.elberjsn.encurtador_link.dto.LinkDTO;
-import org.elberjsn.encurtador_link.dto.UserDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +31,7 @@ public class Link implements Serializable {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
+    private String alias;
     @Column(nullable = false)
     @NonNull
     private String urlOriginal;

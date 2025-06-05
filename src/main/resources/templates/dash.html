@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Encurtador</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <!-- Menu lateral -->
+  <aside class="w-64 bg-white shadow-md h-screen p-4 space-y-4">
+    <h2 class="text-2xl font-bold text-center text-blue-600">Menu</h2>
+    <nav class="flex flex-col space-y-2">
+      <a href="dash.html" class="p-2 rounded hover:bg-blue-100">Início</a>
+      <a href="links.html" class="p-2 rounded hover:bg-blue-100">Links</a>
+      <a href="#" class="p-2 rounded hover:bg-blue-100">Configuração</a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="flex-1 p-6">
+    <!-- Navbar -->
+    <div class="bg-white shadow p-4 mb-6 rounded">
+      <h1 class="text-center text-3xl font-bold text-blue-600">Encurtador</h1>
+    </div>
+
+    <!-- Formulário de cadastro -->
+    <div class="bg-white p-6 rounded shadow mb-6">
+      <h2 class="text-xl font-bold mb-4">Cadastrar novo link</h2>
+      <form class="space-y-4">
+        <input type="text" placeholder="URL original" class="w-full p-3 border border-gray-300 rounded" />
+        <input type="date" id="dateinput" class="w-full p-3 border border-gray-300 rounded" />
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Encurtar</button>
+      </form>
+    </div>
+
+    <!-- Área de gráficos -->
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Estatísticas de acesso</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <canvas class="bg-blue-100 p-4 rounded shadow text-center">Gráfico 1</canvas>
+        <canvas class="bg-green-100 p-4 rounded shadow text-center">Gráfico 2</canvas>
+      </div>
+    </div>
+  </main>
+</body>
+<script>
+    dateinput = document.getElementById("dateinput").min = new Date().toISOString().split("T")[0];
+  </script>
+</html>

@@ -1,7 +1,6 @@
 package org.elberjsn.encurtador_link.security;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
