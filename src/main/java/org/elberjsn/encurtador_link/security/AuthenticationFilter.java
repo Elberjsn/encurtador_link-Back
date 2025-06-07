@@ -2,13 +2,18 @@ package org.elberjsn.encurtador_link.security;
 
 import java.io.IOException;
 
+import org.elberjsn.encurtador_link.dto.UserDTO;
+import org.elberjsn.encurtador_link.mapper.UserMapper;
+import org.elberjsn.encurtador_link.model.User;
 import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,6 +32,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     UserService service;
+    @Autowired
+    private PasswordEncoder encoder;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -44,7 +51,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (subjectToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = service.loadUserByUsername(subjectToken);
 
-            
             if (subjectToken != null) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
@@ -69,6 +75,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         return false;
+    }
+
+    // Get credentials, check hashed password and create token
+    public UserDTO processLoginToken(String email, String pwd) {
+
+        UserDetails user = service.loadUserByUsername(email);
+        if (!encoder.matches(pwd, user.getPassword())) {
+            throw new BadCredentialsException("Senha Invalida");
+        }
+        String token = JWTConfig.generateToken((User) user);
+
+        UserDTO userDto = UserMapper.toDTO((User) user, token);
+
+        return userDto;
     }
 
 }

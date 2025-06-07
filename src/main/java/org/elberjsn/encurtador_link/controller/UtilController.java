@@ -2,6 +2,7 @@ package org.elberjsn.encurtador_link.controller;
 
 import org.elberjsn.encurtador_link.dto.UserDTO;
 import org.elberjsn.encurtador_link.model.User;
+import org.elberjsn.encurtador_link.security.AuthenticationFilter;
 import org.elberjsn.encurtador_link.services.LinkService;
 import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,12 @@ public class UtilController {
 
     @Autowired
     UserService service;
+
     @Autowired
     LinkService linkService;
+
+    @Autowired
+    AuthenticationFilter filter;
 
     /**
      * Process login request with email and password.
@@ -38,7 +43,7 @@ public class UtilController {
     @PostMapping("login")
     public ResponseEntity<String> loginPost(@RequestBody UserDTO user) {
         System.out.println(user.toString());
-        var login = service.processLoginToken(user.email(), user.password());
+        var login = filter.processLoginToken(user.email(), user.password());
 
         if (login.id() == null) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Usuario ou Senha Não Aceito");

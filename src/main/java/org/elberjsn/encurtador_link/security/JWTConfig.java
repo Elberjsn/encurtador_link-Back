@@ -55,5 +55,6 @@ public class JWTConfig {
     private static Instant expirationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusHours(5).toInstant();
     }
+    
 
 }

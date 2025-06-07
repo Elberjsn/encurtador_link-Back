@@ -21,8 +21,7 @@ public class UserService implements UserDetailsService{
     @Autowired
     UserRepository repository;
     
-     @Autowired
-    private PasswordEncoder encoder;
+   
 
     public User save(User user) {
         try{
@@ -77,18 +76,6 @@ public class UserService implements UserDetailsService{
         return user;
     }
 
-    // Get credentials, check hashed password and create token
-    public UserDTO processLoginToken(String email, String pwd) {
-
-        UserDetails user = loadUserByUsername(email);
-        if (!encoder.matches(pwd, user.getPassword())) {
-            throw new BadCredentialsException("Senha Invalida");
-        }
-        String token = JWTConfig.generateToken((User) user);
-
-        UserDTO userDto = UserMapper.toDTO((User) user, token);
-
-        return userDto;
-    }
+   
 
 }
