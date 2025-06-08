@@ -79,8 +79,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     // Get credentials, check hashed password and create token
     public UserDTO processLoginToken(String email, String pwd) {
-
+        System.out.println("Email: " + email + " Senha: " + pwd);
         UserDetails user = service.loadUserByUsername(email);
+        if (user == null) {
+            throw new BadCredentialsException("Usuario Invalido");
+        }
+
         if (!encoder.matches(pwd, user.getPassword())) {
             throw new BadCredentialsException("Senha Invalida");
         }

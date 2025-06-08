@@ -12,6 +12,7 @@ public record UserDTO(
 
         @NonNull
         String password,
+        
         String name,
         String token) {
 }

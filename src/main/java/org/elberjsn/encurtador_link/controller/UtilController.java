@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  * UtilController handles user login and registration requests.
@@ -41,8 +41,9 @@ public class UtilController {
      * @return ResponseEntity with status and token if successful
      */
     @PostMapping("login")
+    @CrossOrigin(origins = "http://localhost:4200") // Adjust the origin as needed
     public ResponseEntity<String> loginPost(@RequestBody UserDTO user) {
-        System.out.println(user.toString());
+
         var login = filter.processLoginToken(user.email(), user.password());
 
         if (login.id() == null) {
@@ -61,25 +62,29 @@ public class UtilController {
      * @return ResponseEntity with status indicating success or failure
      */
     @PostMapping("register")
-    public ResponseEntity<String> registerPost(@RequestBody User user) {
-        User us = service.save(user);
-        if (us.getId() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Erro ao Criar novo Usuario ");
+    @CrossOrigin(origins = "http://localhost:4200") // Adjust the origin as needed
+    public ResponseEntity<User> registerPost(@RequestBody UserDTO user) {
+        System.out.println("Controller"+user);
+        if (user != null) {
+            User us = service.save(user);
+            System.out.println(us);
+            if (us.getId() != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(us);
+            }
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(us.toString());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
-
 
     /**
      * Process a Short Link and forward the correct link
      * 
      * @param shortLink
-     * @return ResponseEntity with header indicating URL 
+     * @return ResponseEntity with header indicating URL
      */
     @GetMapping("{shortLink}")
     public ResponseEntity<String> accessShortLink(@PathVariable String shortLink) {
         String link = linkService.accessLink(shortLink);
-        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION,link).build();
+        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, link).build();
     }
-    
+
 }

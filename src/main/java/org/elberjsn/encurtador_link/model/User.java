@@ -22,10 +22,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Data
-@RequiredArgsConstructor
 @Entity
 @Table(name = "table_users")
 public class User implements UserDetails {
@@ -33,8 +32,8 @@ public class User implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    final Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     @Column(nullable = false)
     @NonNull
@@ -47,27 +46,34 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @NonNull
     private String password;
-    
+
     @OneToMany(mappedBy = "userLink")
     @JsonIgnore
+    @ToString.Exclude
     private List<Link> links;
-
 
     public static User fromDTO(UserDTO userDTO) {
         return new User(
-            userDTO.id(),
-            userDTO.name(),
-            userDTO.email(),
-            userDTO.password()
-        );
+                userDTO.id(),
+                userDTO.name(),
+                userDTO.email(),
+                userDTO.password());
     }
+
+    public User(Long id, @NonNull String name, @NonNull String email, @NonNull String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+    public User(){}
 
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       List<String> list = new ArrayList<>();
-       list.add("ROLE_ADMINISTRAOR");
-       return list.stream()
+        List<String> list = new ArrayList<>();
+        list.add("ROLE_ADMINISTRAOR");
+        return list.stream()
                 .map(role -> new SimpleGrantedAuthority(role))
                 .collect(Collectors.toList());
     }
@@ -75,7 +81,7 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public String getPassword() {
-        return this.getPassword();
+        return this.password;
     }
 
     @Override
@@ -87,7 +93,7 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isAccountNonExpired() {
-       return true;
+        return true;
     }
 
     @Override
@@ -105,7 +111,7 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-       return true;
+        return true;
     }
 
 }

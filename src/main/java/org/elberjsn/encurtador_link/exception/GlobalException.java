@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -42,7 +43,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
     }
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<String> jaExiste(SQLIntegrityConstraintViolationException ex){
+    public static ResponseEntity<String> jaExiste(SQLIntegrityConstraintViolationException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
@@ -85,5 +86,10 @@ public class GlobalException {
     public ResponseEntity<String> erroTokenDecodificacao(JWTDecodeException ex){
        
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso Negado,Erro Interno");
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> erroJson(HttpMessageNotReadableException ex){
+       
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 }
