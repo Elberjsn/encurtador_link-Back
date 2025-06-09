@@ -54,6 +54,9 @@ public class SecurityConfig {
     static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    public static String passwordEncoderString(String senha){
+        return passwordEncoder().encode(senha);
+    }
 
     
 }

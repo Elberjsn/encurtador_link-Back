@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.elberjsn.encurtador_link.exception.CustomError;
 import org.elberjsn.encurtador_link.model.User;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,15 @@ public class JWTConfig {
                     .sign(algorithm);
 
         } catch (JWTCreationException exception) {
-            throw new JWTCreationException("Erro ao gerar token.", exception);
+            throw new JWTCreationException("Erro ao criar o token JWT",exception);
         }
     }
 
     public static String getSubjectFromToken(String token){
+
+        if (token == null || token.isEmpty() || isTokenValid(token) == false) {
+            return null;
+        }
         try{
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             return JWT.require(algorithm)
@@ -42,10 +47,21 @@ public class JWTConfig {
             .verify(token)
             .getSubject();
         }catch(JWTVerificationException exception){
-            throw new JWTVerificationException("Token Expirado");
+           return null;
         }
     }
-
+    public static boolean isTokenValid(String token){
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+            JWT.require(algorithm)
+                    .withIssuer(ISSUER)
+                    .build()
+                    .verify(token);
+            return true;
+        } catch (JWTVerificationException exception) {
+            return false;
+        }
+    }
    
 
     private static Instant creationDate() {

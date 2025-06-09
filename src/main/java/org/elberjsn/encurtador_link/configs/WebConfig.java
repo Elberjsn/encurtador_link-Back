@@ -13,7 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:4200") // A origem exata do seu aplicativo Angular
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos HTTP que seu frontend usará
                 .allowedHeaders("*") // Permite todos os cabeçalhos (Authorization, Content-Type, etc.)
-                .allowCredentials(true) // Permite o envio de credenciais (cookies, HTTP authentication)
+                .allowCredentials(true)
+                .exposedHeaders("Authorization","ID") 
                 .maxAge(3600); // Define por quanto tempo os resultados do preflight (OPTIONS) podem ser armazenados em cache
 
     }

@@ -1,8 +1,10 @@
 package org.elberjsn.encurtador_link.controller;
 
 import org.elberjsn.encurtador_link.dto.UserDTO;
+import org.elberjsn.encurtador_link.exception.CustomError;
 import org.elberjsn.encurtador_link.model.User;
 import org.elberjsn.encurtador_link.security.AuthenticationFilter;
+import org.elberjsn.encurtador_link.security.JWTConfig;
 import org.elberjsn.encurtador_link.services.LinkService;
 import org.elberjsn.encurtador_link.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +12,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * UtilController handles user login and registration requests.
@@ -34,6 +37,17 @@ public class UtilController {
     @Autowired
     AuthenticationFilter filter;
 
+    @GetMapping("")
+    public ResponseEntity<Boolean> validToken(@RequestParam String token) throws CustomError {
+        var tokenV =JWTConfig.getSubjectFromToken(token.substring(7));
+        if(tokenV != null){
+            return ResponseEntity.status(HttpStatus.OK).body(true);
+        }else{
+            return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(false);
+        }
+    }
+    
+
     /**
      * Process login request with email and password.
      *
@@ -43,7 +57,7 @@ public class UtilController {
     @PostMapping("login")
     @CrossOrigin(origins = "http://localhost:4200") // Adjust the origin as needed
     public ResponseEntity<String> loginPost(@RequestBody UserDTO user) {
-
+        
         var login = filter.processLoginToken(user.email(), user.password());
 
         if (login.id() == null) {
@@ -51,7 +65,7 @@ public class UtilController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + login.token());
+        headers.add("Authorization", "Bearer " + login.token() +"|"+login.id().toString() );;
         return ResponseEntity.status(HttpStatus.ACCEPTED).headers(headers).build();
     }
 
@@ -64,7 +78,7 @@ public class UtilController {
     @PostMapping("register")
     @CrossOrigin(origins = "http://localhost:4200") // Adjust the origin as needed
     public ResponseEntity<User> registerPost(@RequestBody UserDTO user) {
-        System.out.println("Controller"+user);
+       
         if (user != null) {
             User us = service.save(user);
             System.out.println(us);
@@ -75,16 +89,6 @@ public class UtilController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
-    /**
-     * Process a Short Link and forward the correct link
-     * 
-     * @param shortLink
-     * @return ResponseEntity with header indicating URL
-     */
-    @GetMapping("{shortLink}")
-    public ResponseEntity<String> accessShortLink(@PathVariable String shortLink) {
-        String link = linkService.accessLink(shortLink);
-        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, link).build();
-    }
+    
 
 }

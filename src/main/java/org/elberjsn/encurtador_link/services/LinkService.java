@@ -17,7 +17,6 @@ public class LinkService {
     LinkRepository repository;
 
     public Link save(Link link) {
-
         try {
             return repository.save(link);
         } catch (Exception e) {
@@ -38,6 +37,9 @@ public class LinkService {
         }
         return null;
     }
+    public Link findLink(Long idLink) {
+        return repository.findById(idLink).orElse(null);
+    }
 
     public Link findLinkUrl(Long user, String url) {
         var links = findLinkUser(user);
@@ -57,6 +59,10 @@ public class LinkService {
             }
         }
         throw new NullPointerException("Esse link não existe");
+    }
+    public void updateLink(Link link) {
+        
+        save(link);
     }
 
     public void deleteLink(Link link) {

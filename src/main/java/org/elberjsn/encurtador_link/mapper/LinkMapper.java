@@ -8,6 +8,6 @@ public class LinkMapper {
         if (link == null) {
             return null;
         }
-        return new LinkDTO(link.getUrlOriginal(), link.getUrlShort(), link.getDateEnd(), link.getStatus());
+        return new LinkDTO(link.getId(), link.getUrlOriginal(), link.getUrlShort(),link.getStatus(),link.getAlias(),link.getCounterAccess());
     }
 }

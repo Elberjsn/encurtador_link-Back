@@ -31,6 +31,7 @@ public class Link implements Serializable {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
+    
     private String alias;
     @Column(nullable = false)
     @NonNull
@@ -53,11 +54,39 @@ public class Link implements Serializable {
 
     private int counterAccess;
 
+    
+
+    public Link(String alias, @NonNull String urlOriginal, @NonNull String urlShort, @NonNull LocalDate dateStart,
+            LocalDate dateEnd, User userLink, Boolean status, int counterAccess) {
+        this.alias = alias;
+        this.urlOriginal = urlOriginal;
+        this.urlShort = urlShort;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.userLink = userLink;
+        this.status = status;
+        this.counterAccess = counterAccess;
+    }
+    public Link(){
+    }
+    public Link(Long id, String urlOriginal, String urlShort, Boolean status, String alias, int counterAccess) {
+        this.id = id;
+        this.urlOriginal = urlOriginal;
+        this.urlShort = urlShort;
+        this.status = status;
+        this.alias = alias;
+        this.counterAccess = counterAccess;
+    }
+
     public static Link fromDTO(LinkDTO linkDTO) {
+       
         return new Link(
+            linkDTO.id(),
             linkDTO.url(),
             linkDTO.urlShort(),
-            linkDTO.expira()
+            linkDTO.status(),
+            linkDTO.alias(),
+            linkDTO.clicks()
         );
     }
 } 

@@ -39,14 +39,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain chain)
             throws ServletException, IOException {
+
         String authHeader = request.getHeader("Authorization");
 
-        if (filter(request.getRequestURI()) || authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String subjectToken = null;
+        
+        try {
+            if (filter(request.getRequestURI()) || authHeader == null || !authHeader.startsWith("Bearer ")) {
+                chain.doFilter(request, response);
+                return;
+            }
+            subjectToken = JWTConfig.getSubjectFromToken(authHeader.substring(7));
+        } catch (IOException e) {
             chain.doFilter(request, response);
-            return;
         }
-
-        String subjectToken = JWTConfig.getSubjectFromToken(authHeader.substring(7));
 
         if (subjectToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = service.loadUserByUsername(subjectToken);
@@ -79,10 +85,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     // Get credentials, check hashed password and create token
     public UserDTO processLoginToken(String email, String pwd) {
-        System.out.println("Email: " + email + " Senha: " + pwd);
+
         UserDetails user = service.loadUserByUsername(email);
         if (user == null) {
-            throw new BadCredentialsException("Usuario Invalido");
+            throw new BadCredentialsException("Email não Encotrado");
         }
 
         if (!encoder.matches(pwd, user.getPassword())) {

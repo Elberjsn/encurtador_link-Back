@@ -1,12 +1,11 @@
 package org.elberjsn.encurtador_link.services;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-
 import org.elberjsn.encurtador_link.dto.UserDTO;
-import org.elberjsn.encurtador_link.exception.GlobalException;
 import org.elberjsn.encurtador_link.model.User;
 import org.elberjsn.encurtador_link.repository.UserRepository;
+import org.elberjsn.encurtador_link.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,31 +18,34 @@ public class UserService implements UserDetailsService {
     UserRepository repository;
 
     public User save(UserDTO user) {
-        var t = User.fromDTO(user);
-        System.out.println("Service - "+t.toString());
+        var newUser = User.fromDTO(user);
+        newUser.setPassword(SecurityConfig.passwordEncoderString(user.password()));
+        System.out.println(newUser.toString());
 
         if (emailIsPresent(user.email()) == true) {
-           GlobalException.jaExiste(new SQLIntegrityConstraintViolationException("Email já cadastrado"));
+            throw new DataIntegrityViolationException("Email já cadastrado.");
         }
 
-        User saves= repository.save(t);
+        User saves = repository.save(newUser);
         if (saves.getId() == null) {
             throw new NullPointerException("Erro ao Cadastrar");
-        }else{
+        } else {
             return saves;
         }
-        
+
     }
-    public User save(User user){
+
+    public User save(User user) {
         return repository.save(user);
     }
-    public boolean emailIsPresent(String email){
+
+    public boolean emailIsPresent(String email) {
         return repository.findByEmail(email).isPresent();
     }
 
     public User findByEmailUser(String email) {
         return repository.findByEmail(email).orElse(null);
-        
+
     }
 
     public User findById(Long id) {
