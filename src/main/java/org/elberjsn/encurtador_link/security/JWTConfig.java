@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.elberjsn.encurtador_link.exception.CustomError;
 import org.elberjsn.encurtador_link.model.User;
 import org.springframework.stereotype.Service;
 
