@@ -12,7 +12,7 @@ Um projeto Java para encurtar URLs de forma simples e eficiente.
 
 - Java 17+
 - Spring Boot
-- Banco de Dados (ex: H2, MySQL)
+- Banco de Dados PostgreSQL
 
 ## Como Executar
 
