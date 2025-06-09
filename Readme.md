@@ -17,17 +17,11 @@ Um projeto Java para encurtar URLs de forma simples e eficiente.
 ## Como Executar
 
 1. Clone o repositório:
-    ```bash
-    git clone https://github.com/Elbrejsn/encurtador_link.git
-    ```
+    ```bash git clone https://github.com/Elbrejsn/encurtador_link.git```
 2. Acesse a pasta do projeto:
-    ```bash
-    cd encurtador_link
-    ```
+    ```bashcd encurtador_link```
 3. Execute o projeto:
-    ```bash
-    ./mvnw spring-boot:run
-    ```
+    ```bash./mvnw spring-boot:run```
 
 ## Contribuição
 
